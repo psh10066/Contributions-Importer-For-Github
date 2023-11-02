@@ -87,6 +87,7 @@ class Importer:
 
             committed_date = c.committed_date
             authored_date = c.authored_date
+            commit_message = '[' + c.repo.working_dir.split('\\')[-1] + '] ' + c.message
             if self.commit_time_max_past > 0:
                 random_past = int(random() * self.commit_time_max_past)
                 committed_date -= random_past
@@ -124,7 +125,7 @@ class Importer:
                 else:
                     commits_for_last_day = 1
                 print('    Commit at: ' + time.strftime("%Y-%m-%d %H:%M:%S %z", time.localtime(break_committed_date)))
-                message = 'add code in files types: ' + ','.join(broken_stats.insertions.keys()) + \
+                message = commit_message + '\n\nadd code in files types: ' + ','.join(broken_stats.insertions.keys()) + \
                           '\nremove code in files types: ' + ','.join(broken_stats.deletions.keys())
                 self.committer.commit(break_committed_date, break_authored_date, message)
                 last_committed_date = break_committed_date
