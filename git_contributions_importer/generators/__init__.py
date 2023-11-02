@@ -15,6 +15,7 @@ from .BashGenerator import BashGenerator
 from .SqlGenerator import SqlGenerator
 from .ScalaGenerator import ScalaGenerator
 from .TsGenerator import TsGenerator
+from .VueGenerator import VueGenerator
 
 available_generators = {
     '.md': Generator,
@@ -35,7 +36,8 @@ available_generators = {
     '.sql': SqlGenerator,
     '.scala': ScalaGenerator,
     '.ts': TsGenerator,
-    '.tsx': TsGenerator
+    '.tsx': TsGenerator,
+    '.vue': VueGenerator,
 }
 
 
