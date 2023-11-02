@@ -16,6 +16,7 @@ from .SqlGenerator import SqlGenerator
 from .ScalaGenerator import ScalaGenerator
 from .TsGenerator import TsGenerator
 from .VueGenerator import VueGenerator
+from .YmlGenerator import YmlGenerator
 
 available_generators = {
     '.md': Generator,
@@ -38,6 +39,8 @@ available_generators = {
     '.ts': TsGenerator,
     '.tsx': TsGenerator,
     '.vue': VueGenerator,
+    '.yml': YmlGenerator,
+    '.yaml': YmlGenerator
 }
 
 
