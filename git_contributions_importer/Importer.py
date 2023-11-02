@@ -66,13 +66,13 @@ class Importer:
 
         if self.start_from_last:
             last_committed_date = self.committer.get_last_commit_date()
-            print('\nStarting from last commit: ' + time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(last_committed_date)))
+            print('\nStarting from last commit: ' + time.strftime("%Y-%m-%d %H:%M:%S %z", time.localtime(last_committed_date)))
         else:
             print('\nStarting')
             last_committed_date = 0
 
         for c in self.get_all_commits(last_committed_date+1):
-            print('\nAnalysing commit at ' + time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(c.committed_date)))
+            print('\nAnalysing commit at ' + time.strftime("%Y-%m-%d %H:%M:%S %z", time.localtime(c.committed_date)))
 
             if self.author is not None:
                 if isinstance(self.author, list):
@@ -88,7 +88,7 @@ class Importer:
             committed_date = c.committed_date
             if self.commit_time_max_past > 0:
                 committed_date -= int(random() * self.commit_time_max_past)
-                print('    Commit date changed to: ' + time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(c.committed_date)))
+                print('    Commit date changed to: ' + time.strftime("%Y-%m-%d %H:%M:%S %z", time.localtime(c.committed_date)))
 
             stats = Stats(self.max_changes_per_file)
             self.get_changes(c, stats)
@@ -110,14 +110,14 @@ class Importer:
                         max_past = min(break_committed_date - last_committed_date,
                                        self.changes_commits_max_time_backward)
                     break_committed_date -= int(random() * (max_past / 3) + (max_past / 3 * 2))
-                if time.strftime("%Y-%m-%d", time.gmtime(last_committed_date)) == time.strftime("%Y-%m-%d", time.gmtime(break_committed_date)):
+                if time.strftime("%Y-%m-%d", time.localtime(last_committed_date)) == time.strftime("%Y-%m-%d", time.localtime(break_committed_date)):
                     commits_for_last_day += 1
                     if commits_for_last_day > random() * (self.max_commits_per_day[1] - self.max_commits_per_day[0]) + self.max_commits_per_day[0]:
-                        print('    Commit skipped because the maximum amount of commit for ' + time.strftime("%Y-%m-%d", time.gmtime(last_committed_date)) + ' exceeded')
+                        print('    Commit skipped because the maximum amount of commit for ' + time.strftime("%Y-%m-%d", time.localtime(last_committed_date)) + ' exceeded')
                         continue
                 else:
                     commits_for_last_day = 1
-                print('    Commit at: ' + time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(break_committed_date)))
+                print('    Commit at: ' + time.strftime("%Y-%m-%d %H:%M:%S %z", time.localtime(break_committed_date)))
                 message = 'add code in files types: ' + ','.join(broken_stats.insertions.keys()) + \
                           '\nremove code in files types: ' + ','.join(broken_stats.deletions.keys())
                 self.committer.commit(break_committed_date, message)
