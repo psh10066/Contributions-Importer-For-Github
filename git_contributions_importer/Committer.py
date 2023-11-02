@@ -32,13 +32,14 @@ class Committer:
         return last_commit_date
 
     ''' performs the commit. date is in seconds from epoch '''
-    def commit(self, date, message):
+    def commit(self, committed_date, authored_date, message):
         self.check_readme()
         for file in self.content.get_files():
             self.mock_repo.git.add(os.path.join(self.mock_repo_path, file))
-        date_iso_format = time.strftime("%Y-%m-%d %H:%M:%S %z", time.localtime(date))
-        os.environ['GIT_AUTHOR_DATE'] = date_iso_format
-        os.environ['GIT_COMMITTER_DATE'] = date_iso_format
+        committed_date_iso_format = time.strftime("%Y-%m-%d %H:%M:%S %z", time.localtime(committed_date))
+        authored_date_iso_format = time.strftime("%Y-%m-%d %H:%M:%S %z", time.localtime(authored_date))
+        os.environ['GIT_COMMITTER_DATE'] = committed_date_iso_format
+        os.environ['GIT_AUTHOR_DATE'] = authored_date_iso_format
         try:
             self.mock_repo.git.commit('-m', message, '--allow-empty')
         except git.exc.GitError as e:

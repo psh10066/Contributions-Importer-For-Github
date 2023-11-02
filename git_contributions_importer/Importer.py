@@ -86,8 +86,11 @@ class Importer:
                     continue
 
             committed_date = c.committed_date
+            authored_date = c.authored_date
             if self.commit_time_max_past > 0:
-                committed_date -= int(random() * self.commit_time_max_past)
+                random_past = int(random() * self.commit_time_max_past)
+                committed_date -= random_past
+                authored_date -= random_past
                 print('    Commit date changed to: ' + time.strftime("%Y-%m-%d %H:%M:%S %z", time.localtime(c.committed_date)))
 
             stats = Stats(self.max_changes_per_file)
@@ -103,13 +106,16 @@ class Importer:
                 apply(self.content, broken_stats)
                 self.content.save()
                 break_committed_date = committed_date
+                break_authored_date = authored_date
                 if broken_stats != stats:
                     if last_committed_date == 0:
                         max_past = self.changes_commits_max_time_backward
                     else:
                         max_past = min(break_committed_date - last_committed_date,
                                        self.changes_commits_max_time_backward)
-                    break_committed_date -= int(random() * (max_past / 3) + (max_past / 3 * 2))
+                    random_break = int(random() * (max_past / 3) + (max_past / 3 * 2))
+                    break_committed_date -= random_break
+                    break_authored_date -= random_break
                 if time.strftime("%Y-%m-%d", time.localtime(last_committed_date)) == time.strftime("%Y-%m-%d", time.localtime(break_committed_date)):
                     commits_for_last_day += 1
                     if commits_for_last_day > random() * (self.max_commits_per_day[1] - self.max_commits_per_day[0]) + self.max_commits_per_day[0]:
@@ -120,7 +126,7 @@ class Importer:
                 print('    Commit at: ' + time.strftime("%Y-%m-%d %H:%M:%S %z", time.localtime(break_committed_date)))
                 message = 'add code in files types: ' + ','.join(broken_stats.insertions.keys()) + \
                           '\nremove code in files types: ' + ','.join(broken_stats.deletions.keys())
-                self.committer.commit(break_committed_date, message)
+                self.committer.commit(break_committed_date, break_authored_date, message)
                 last_committed_date = break_committed_date
 
     ''' iter commits coming from any branch'''
@@ -130,7 +136,7 @@ class Importer:
         for repo in self.repos:
             for b in repo.branches:
                 for c in repo.iter_commits(b.name):
-                    if c.committed_date < ignore_before_date or (self.ignore_before_date != None and c.committed_date < self.ignore_before_date): 
+                    if c.committed_date < ignore_before_date or (self.ignore_before_date != None and c.committed_date < self.ignore_before_date):
                         continue
                     if c.hexsha not in s:
                         s.add(c.hexsha)
